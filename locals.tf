@@ -2,7 +2,7 @@ locals {
   environment = {
     dev = {
       name_suffix   = "dev"
-      instance_type = "t3.micro"
+      instance_type = "t4g.medium"
     },
     stage = {
       name_suffix   = "stage"

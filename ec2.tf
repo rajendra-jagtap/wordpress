@@ -46,3 +46,16 @@ resource "aws_instance" "wordpress" {
     Name = "${terraform.workspace}-wordpress"
   }
 }
+
+resource "null_resource" "ansible_provisioner" {
+  triggers = {
+    instance_ip = aws_instance.wordpress.public_ip
+  }
+
+  provisioner "local-exec" {
+    command = "ansible-playbook -i '${aws_instance.wordpress.public_ip},' -u ec2-user --private-key '${path.module}/devops.pem' playbook/wordpress_install.yml"
+    environment = {
+      ANSIBLE_HOST_KEY_CHECKING = "False"
+    }
+  }
+}

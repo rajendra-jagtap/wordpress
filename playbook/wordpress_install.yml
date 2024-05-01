@@ -1,0 +1,107 @@
+---
+- name: Install WordPress on Amazon Linux 2
+  hosts: all
+  become: yes
+  vars_files:
+    - vars.yml
+
+  tasks:
+    #- name: Install EPEL repository
+    #  yum:
+    #    name: epel-release
+    #    state: present
+
+    - name: Enable EPEL Repository
+      command: amazon-linux-extras install epel -y
+
+    - name: Manage the Amazon Linux Extras repository for PHP
+      command: "amazon-linux-extras enable php8.0"  # Example for enabling a specific PHP version
+      when: php_version == "php8.0"  
+
+    - name: Install necessary packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - "{{ http_version }}"
+        - "{{ mysql_version }}"
+        - "{{ php_version }}"
+        - "{{ php_version }}-mysqlnd"
+        - "{{ php_version }}-xml"
+        - "{{ php_version }}-gd"
+        - "{{ php_version }}-mbstring"
+        - "{{ php_version }}-cli"
+        - "{{ php_version }}-common"
+        - unzip
+        - wget
+
+    - name: Ensure services are started and enabled
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - httpd
+        - mysqld
+
+    - name: Set MySQL root password
+      mysql_user:
+        login_user: root
+        login_password: ""
+        user: root
+        password: "{{ mysql_root_password }}"
+        host_all: yes
+
+    - name: Remove anonymous MySQL users
+      mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        user: ""
+        state: absent
+        host_all: yes
+
+    - name: Create MySQL database
+      mysql_db:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        name: "{{ mysql_db }}"
+        state: present
+
+    - name: Create MySQL user
+      mysql_user:
+        login_user: root
+        login_password: "{{ mysql_root_password }}"
+        name: "{{ mysql_user }}"
+        password: "{{ mysql_password }}"
+        priv: "{{ mysql_db }}.*:ALL"
+        state: present
+        host_all: yes
+
+    - name: Download WordPress
+      get_url:
+        url: "https://wordpress.org/wordpress-{{ wordpress_version }}.tar.gz"
+        dest: /tmp/wordpress.tar.gz
+        mode: '0644'
+
+    - name: Extract WordPress
+      unarchive:
+        src: /tmp/wordpress.tar.gz
+        dest: /var/www/html/
+        remote_src: yes
+
+    - name: Set up WordPress config file
+      template:
+        src: wp-config.php.j2
+        dest: /var/www/html/wordpress/wp-config.php
+
+    - name: Set permissions for WordPress
+      file:
+        path: /var/www/html/wordpress
+        owner: apache
+        group: apache
+        recurse: yes
+
+    - name: Configure Apache to Serve WordPress
+      template:
+        src: wordpress.conf.j2
+        dest: "/etc/httpd/conf.d/{{ http_conf }}"

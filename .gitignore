@@ -31,3 +31,5 @@ crash.log
 logs/
 *.log
 bin/
+
+*.pem

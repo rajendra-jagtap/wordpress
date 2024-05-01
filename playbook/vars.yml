@@ -1,0 +1,12 @@
+# vars.yml
+mysql_root_password: "Gfs#bcv47"
+mysql_db: "wordpress"
+mysql_user: "wp_user"
+mysql_password: "Gfs#bcv47"
+http_version: "httpd"
+mysql_version: "mariadb"
+php_version: "php"
+wordpress_version: "latest"
+#http_host: "your_domain_or_IP"
+http_conf: "wordpress.conf"
+http_port: "80"
