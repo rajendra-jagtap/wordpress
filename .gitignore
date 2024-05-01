@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Ansible
+*.retry
+
+# Jenkins
+jobs/
+workspace/
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.*
+terraform.rc
+crash.log
+
+# Editor directories and files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# System files
+.DS_Store
+
+# Logs and binaries
+logs/
+*.log
+bin/

@@ -1,5 +1,5 @@
 resource "aws_security_group" "wp_sg" {
-  name        = "wordpress-sg-${terraform.workspace}"
+  name        = "${terraform.workspace}-wordpress-sg"
   description = "Security group for WordPress instance in ${terraform.workspace}"
   vpc_id      = var.vpc_id
 
@@ -25,7 +25,7 @@ resource "aws_security_group" "wp_sg" {
   }
 
   tags = {
-    Name = "SG-WordPress-${terraform.workspace}"
+    Name = "${terraform.workspace}-wordpress-sg"
   }
 }
 
