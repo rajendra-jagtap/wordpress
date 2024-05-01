@@ -58,4 +58,5 @@ resource "null_resource" "ansible_provisioner" {
       ANSIBLE_HOST_KEY_CHECKING = "False"
     }
   }
+  depends_on = [aws_instance.wordpress]
 }
