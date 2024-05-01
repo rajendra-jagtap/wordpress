@@ -42,7 +42,7 @@
         enabled: yes
       loop:
         - httpd
-        - mysqld
+        - mariadb
 
     - name: Set MySQL root password
       mysql_user:
